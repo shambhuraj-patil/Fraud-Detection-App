@@ -56,7 +56,7 @@ def streamlit_app():
             - The app won't work if columns are missing or renamed
             """)
         # Load and offer first 10 rows from training data as sample
-        sample_dataset = pd.read_csv("test.csv").head(20)
+        sample_dataset = pd.read_csv("fraud_detection.csv").head(20)
         st.download_button("Download Sample Input CSV", sample_dataset.to_csv(index=False),
                                file_name="sample_input.csv", mime="text/csv")
 
