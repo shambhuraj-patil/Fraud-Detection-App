@@ -160,8 +160,8 @@ def streamlit_app():
 
         # Load model and scaler
         try:
-            model = pickle.load(open("fraud_model.pkl", "rb"))
-            scaler = pickle.load(open("scaler.pkl", "rb"))
+            model = pickle.load(open("Fraud-Detection/fraud_model.pkl", "rb"))
+            scaler = pickle.load(open("Fraud-Detection/scaler.pkl", "rb"))
         except FileNotFoundError:
             st.error("Required model files not found: 'fraud_model.pkl' or 'scaler.pkl'. Please upload them.")
             st.stop()
