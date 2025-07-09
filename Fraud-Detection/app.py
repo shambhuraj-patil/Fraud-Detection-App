@@ -55,10 +55,14 @@ def streamlit_app():
             - Your file must follow the same column structure
             - The app won't work if columns are missing or renamed
             """)
+            
         # Load and offer first 10 rows from training data as sample
-        sample_dataset = pd.read_csv("fraud_detection.csv").head(20)
-        st.download_button("Download Sample Input CSV", sample_dataset.to_csv(index=False),
-                               file_name="sample_input.csv", mime="text/csv")
+        try:
+            sample_dataset = pd.read_csv("Fraud-Detection/fraud_detection.csv").head(20)
+            st.download_button("Download Sample Input CSV", sample_dataset.to_csv(index=False),
+                file_name="sample_input.csv", mime="text/csv")
+        except FileNotFoundError:
+            st.warning("Sample CSV not found. Please check file path or re-upload.")
 
         upload_file = st.file_uploader("Upload a CSV file", type="csv")
         if upload_file:
@@ -91,8 +95,16 @@ def streamlit_app():
             dataset.drop(columns=["TransactionID", "CustomerID"], inplace=True)
             st.info("Dropped 'TransactionID' and 'CustomerID'")
 
-            # Removing outliers using the IQR (Interquartile Range) method
-            numeric_columns = ["Amount","TransactionSpeed"]
+            # Define numeric columns (check if they exist)
+            all_numeric = ["Amount", "TransactionSpeed"]
+            numeric_columns = [col for col in all_numeric if col in dataset.columns]
+                
+            # Warn if any expected numeric column is missing
+            missing_numeric = set(all_numeric) - set(numeric_columns)
+            if missing_numeric:    
+                st.warning(f"Missing numeric columns skipped during outlier removal: {', '.join(missing_numeric)}")
+                
+            # Remove outliers using IQR method
             for col in numeric_columns:
                 Q1 = dataset[col].quantile(0.25)
                 Q3 = dataset[col].quantile(0.75)
@@ -151,7 +163,7 @@ def streamlit_app():
             model = pickle.load(open("fraud_model.pkl", "rb"))
             scaler = pickle.load(open("scaler.pkl", "rb"))
         except FileNotFoundError:
-            st.error("fraud_model.pkl' or 'scaler.pkl' not found.")
+            st.error("Required model files not found: 'fraud_model.pkl' or 'scaler.pkl'. Please upload them.")
             st.stop()
 
         # Align dataset with model input
