@@ -132,6 +132,7 @@ def streamlit_app():
 
         if "raw_data" not in st.session_state:
             st.warning("Please upload and preprocess your data first.")
+            st.stop()
         else:
             dataset = st.session_state["raw_data"]
 
