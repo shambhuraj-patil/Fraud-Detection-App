@@ -4,7 +4,7 @@ This repository contains a collection of my major machine learning projects. The
 
 ## 📁 Current Project
 
-- [`fraud-detection`](./fraud-detection):  
+- [`Fraud-Detection`](./Fraud-Detection):  
   A machine learning project focused on detecting fraudulent transactions using various supervised learning techniques.
 
 > Each project will have its own folder with a detailed `README.md` explaining the problem, approach, and results.
