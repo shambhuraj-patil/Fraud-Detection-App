@@ -55,7 +55,7 @@ def streamlit_app():
             """)
         # Load and offer first 10 rows from training data as sample
         try:
-            sample_dataset = pd.read_csv("fraud_detection.csv").head(20)
+            sample_dataset = pd.read_csv("Fraud-Detection/fraud_detection.csv").head(20)
             st.download_button("📄 Download Sample Input CSV", sample_dataset.to_csv(index=False),
                             file_name="sample_input.csv", mime="text/csv")
         except FileNotFoundError:
@@ -149,8 +149,8 @@ def streamlit_app():
 
         # Load model and scaler
         try:
-            model = pickle.load(open("fraud_model.pkl", "rb"))
-            scaler = pickle.load(open("scaler.pkl", "rb"))
+            model = pickle.load(open("Fraud-Detection/fraud_model.pkl", "rb"))
+            scaler = pickle.load(open("Fraud-Detection/scaler.pkl", "rb"))
         except FileNotFoundError:
             st.error("🚫 fraud_model.pkl' or 'scaler.pkl' not found.")
             st.stop()
