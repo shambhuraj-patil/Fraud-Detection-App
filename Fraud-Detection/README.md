@@ -83,13 +83,6 @@ ML-Major-Project/
 
 ---
 
-## 📚 Dataset Source
-
-Original dataset from Kaggle:
-[Credit Card Fraud Detection Dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
-
----
-
 ## 👨‍💻 Author
 
 Shambhuraj Patil
