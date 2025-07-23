@@ -1,4 +1,4 @@
-![Thumbnail](https://raw.githubusercontent.com/shambhuraj-patil/ML-Major-Project/main/Fraud-Detection/thumbnail.jpg)
+<img src="https://raw.githubusercontent.com/shambhuraj-patil/ML-Major-Project/main/Fraud-Detection/thumbnail.jpg"/>
 
 # 🛡️ Credit Card Fraud Detection using Machine Learning
 
