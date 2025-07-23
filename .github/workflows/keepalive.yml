@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Ping Streamlit app
         run: |
-          curl -L https://ml-major-project-fraud-detection.streamlit.app
+          curl -L https://ml-major-project-credit-fraud-check.streamlit.app/
