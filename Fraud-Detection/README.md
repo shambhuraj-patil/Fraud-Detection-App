@@ -1,7 +1,4 @@
----
-title: "Credit Card Fraud Detection"
-thumbnail: "https://raw.githubusercontent.com/shambhuraj-patil/ML-Major-Project/main/Fraud-Detection/thumbnail.jpg"
----
+![Thumbnail](https://raw.githubusercontent.com/shambhuraj-patil/ML-Major-Project/main/Fraud-Detection/thumbnail.jpg)
 
 # 🛡️ Credit Card Fraud Detection using Machine Learning
 
