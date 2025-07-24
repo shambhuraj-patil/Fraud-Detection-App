@@ -1,2 +1,8 @@
+[server]
+headless = true
+port = 8501
+enableCORS = false
+
 [general]
+target = "Fraud-Detection/src/app.py"
 thumbnailUrl = "https://raw.githubusercontent.com/shambhuraj-patil/ML-Major-Project/main/Fraud-Detection/assets/thumbnail.jpg"
