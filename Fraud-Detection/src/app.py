@@ -87,7 +87,7 @@ def streamlit_app():
             """)
 
         st.markdown("---")
-        st.markdown("Made with ❤️ using Python, Streamlit, Scikit-learn  \nBy **Shambhuraj Patil**")
+        st.markdown("Made with :sparkling_heart: using Python, Streamlit, Scikit-learn  \nBy **Shambhuraj Patil**")
 
     # ----------------------- UPLOAD & PREPROCESS ------------------------ #
     elif page == "📥 Upload & Preprocess":
