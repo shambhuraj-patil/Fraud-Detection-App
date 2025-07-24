@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 
 @st.cache_resource
 def load_model_and_scaler():
-    model_path = "models/fraud_model.pkl"
-    scaler_path = "models/scaler.pkl"
+    model_path = "../models/fraud_model.pkl"
+    scaler_path = "../models/scaler.pkl" 
     if not os.path.exists(model_path) or not os.path.exists(scaler_path):
         return None, None
     with open(model_path, "rb") as f:
@@ -60,7 +60,7 @@ def streamlit_app():
     if page == "🏠 Home":
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            st.image("assets/fraud_banner.jpg", use_container_width=True)
+            st.image("../assets/fraud_banner.jpg", use_container_width=True)
 
         st.title("🛡️ Credit Card Fraud Detection System")
         st.markdown("Predict the likelihood of fraud in transaction data using a trained machine learning model.")
@@ -102,7 +102,7 @@ def streamlit_app():
 
         # Offer sample CSV download for user reference
         try:
-            sample_dataset = pd.read_csv("data/fraud_detection.csv").head(20)
+            sample_dataset = pd.read_csv("../data/fraud_detection.csv").head(20)
             st.download_button("📄 Download Sample Input CSV", sample_dataset.to_csv(index=False),
                             file_name="sample_input.csv", mime="text/csv")
         except FileNotFoundError:
