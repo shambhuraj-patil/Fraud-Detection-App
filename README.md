@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/shambhuraj-patil/Fraud-Detection-App/main/thumbnail.jpg" width="100%" />
-</p>
-
 # 🛡️ Credit Card Fraud Detection using Machine Learning
 
 A machine learning-powered application that predicts fraudulent credit card transactions using real-world imbalanced data. The model is deployed with a user-friendly interface built using Streamlit.
