@@ -56,7 +56,7 @@ def streamlit_app():
     if page == "🏠 Home":
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            st.image("https://i.pinimg.com/736x/66/7e/23/667e233091711d3f3e981b9b7c38c72b.jpg", use_container_width=True)
+            st.image("assets/thumbnail.jpg", use_container_width=True)
 
         st.title("🛡️ Credit Card Fraud Detection System")
         st.markdown("Predict the likelihood of fraud in transaction data using a trained machine learning model.")
@@ -98,7 +98,7 @@ def streamlit_app():
 
         # Offer sample CSV download for user reference
         try:
-            sample_dataset = pd.read_csv("Fraud-Detection/fraud_detection.csv").head(20)
+            sample_dataset = pd.read_csv("data/fraud_detection.csv").head(20)
             st.download_button("📄 Download Sample Input CSV", sample_dataset.to_csv(index=False),
                             file_name="sample_input.csv", mime="text/csv")
         except FileNotFoundError:
