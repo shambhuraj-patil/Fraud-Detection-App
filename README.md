@@ -90,7 +90,7 @@ Shambhuraj Patil
 
 📧 shambhurajpatil27@gmail.com
 
-[LinkedIn](https://www.linkedin.com/in/shambhurajpatil/)
+🔗 [LinkedIn](https://www.linkedin.com/in/shambhurajpatil/)
 
 ---
 
