@@ -52,7 +52,7 @@ def preprocess_dataset(dataset):
 # Main Streamlit web application
 
 def streamlit_app():
-    st.set_page_config(page_title="Credit Card Fraud Detection | Shambhuraj", layout="wide")
+    st.set_page_config(page_title="Credit Card Fraud Detection", page_icon="💳", layout="wide")
     st.sidebar.title("🔍 Navigation")
     page = st.sidebar.radio("Go to:", ["🏠 Home", "📥 Upload & Preprocess", "📊 Visualization", "🧠 Model Prediction"])
 
