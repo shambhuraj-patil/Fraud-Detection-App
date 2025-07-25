@@ -59,8 +59,8 @@ The app is live using **Streamlit Cloud**, and also fully runnable locally.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/shambhuraj-patil/ML-Major-Project.git
-cd ML-Major-Project
+git clone https://github.com/shambhuraj-patil/Fraud-Detection-App.git
+cd Fraud-Detection-App
 
 # 2. Install dependencies
 pip install -r requirements.txt
@@ -73,7 +73,7 @@ streamlit run app.py
 
 ## 📁 Project Structure
 
-ML-Major-Project/
+Fraud-Detection-App/
 │
 ├── app.py               # Streamlit app
 ├── fraud_detection.py   # Core ML model logic
