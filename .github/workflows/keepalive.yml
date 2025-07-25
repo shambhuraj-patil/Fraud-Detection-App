@@ -10,4 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Streamlit app
-        run: curl https://ml-major-project-credit-fraud-check.streamlit.app/
+        run: curl https://fraud-analyzer.streamlit.app/
+
