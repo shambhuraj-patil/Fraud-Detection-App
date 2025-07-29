@@ -1,0 +1,12 @@
+name: Keep App Alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # every 10 minutes (UTC time)
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping your Streamlit app
+        run: curl -s https://fraud-analyzer.streamlit.app/
