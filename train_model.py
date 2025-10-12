@@ -1,13 +1,9 @@
-
-
 import pickle
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import GridSearchCV
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score,recall_score,precision_score,f1_score
@@ -37,7 +33,7 @@ def load_and_clean_data(dataset):
     plt.title("Boxplot for numeric columns")
     plt.xlabel("Columns")
     plt.ylabel("Count")
-    plt.show()
+    plt.show() 
 
     # Removing outliers using the IQR (Interquartile Range) method
     for col in numeric_columns:
@@ -57,7 +53,7 @@ def visualize(dataset):
     sns.countplot(data=dataset,x="Fraud",hue="Fraud",palette=["Green","Red"])
     plt.title("Fraud vs Non-fraud transactions")
     plt.xlabel("Fraud (0 = Non-fraud, 1 = Fraud)")
-    plt.show()
+    plt.show() 
 
     print("\nVisualization : Fraud Distribution by Transaction Type")
     sns.countplot(data=dataset,x="TransactionType",hue="Fraud",palette=["Green","Red"])
@@ -85,38 +81,19 @@ def preprocess_data(dataset):
     
     # Display class distribution after resampling
     print("\nClass distribution after resampling:\n", y_train_resampled.value_counts())
-
-    # Standardize features for better performance
-    sc = StandardScaler()
-    scaled_x_train = sc.fit_transform(x_train_resampled)
-    scaled_x_test = sc.transform(x_test)
-
-    # Train Logistic Regression model
-    lr = LogisticRegression()
-    lr.fit(scaled_x_train,y_train_resampled)
-    lr_prediction = lr.predict(scaled_x_test)
-
-    # Evaluate Logistic Regression model
-    lr_acc = accuracy_score(y_test, lr_prediction)
-    lr_prec = precision_score(y_test, lr_prediction)
-    lr_rec = recall_score(y_test, lr_prediction)
-    lr_f1 = f1_score(y_test, lr_prediction)
-
-    # Define hyperparameter grid for Random Forest
+    
+    # Define hyperparameter grid for Random Forest (LOW LOAD)
     param_grid = {
-        'n_estimators': [50, 100, 200],
-        'max_depth': [10, 20, None],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
-        'max_features': ['sqrt', 'log2']
+        'n_estimators': [50, 100], 
+        'max_depth': [10, 20],     
     }
 
     # Train Random Forest model
     rf = RandomForestClassifier(random_state=42)
 
     # Perform hyperparameter tuning using Grid Search
-    grid_search = GridSearchCV(rf,param_grid,cv=5,n_jobs=-1)
-    grid_search.fit(x_train_resampled,y_train_resampled)
+    grid_search = GridSearchCV(rf, param_grid, cv=2, n_jobs=4) 
+    grid_search.fit(x_train_resampled, y_train_resampled) 
 
     # Get the best hyperparameters
     best_rf = grid_search.best_estimator_
@@ -135,23 +112,14 @@ def preprocess_data(dataset):
     with open("fraud_model.pkl", "wb") as f:
         pickle.dump(best_rf, f)
 
-    # Save the fitted scaler
-    with open("scaler.pkl", "wb") as f:
-        pickle.dump(sc, f)
+    print("\nModel saved as 'fraud_model.pkl'")
 
-    print("\nModel and Scaler saved as 'fraud_model.pkl' and 'scaler.pkl'")
-
-    return lr_acc, lr_prec, lr_rec, lr_f1, rf_acc, rf_prec, rf_rec, rf_f1
+    # Return Random Forest metrics
+    return rf_acc, rf_prec, rf_rec, rf_f1
 
 # Function to display model evaluation results
-def results(lr_acc, lr_prec, lr_rec, lr_f1, rf_acc, rf_prec, rf_rec, rf_f1):
-    print("\nLogistic Regression Performance:")
-    print(f"Accuracy: {lr_acc*100:.2f}")
-    print(f"Precision: {lr_prec*100:.2f}")
-    print(f"Recall: {lr_rec*100:.2f}")
-    print(f"F1 Score: {lr_f1*100:.2f}")
-
-    print("\nRandom Forest Performance:")
+def results(rf_acc, rf_prec, rf_rec, rf_f1):
+    print("\nModel Performance (Random Forest):")
     print(f"Accuracy: {rf_acc*100:.2f}")
     print(f"Precision: {rf_prec*100:.2f}")
     print(f"Recall: {rf_rec*100:.2f}")
@@ -163,8 +131,8 @@ def main():
     dataset = pd.read_csv("fraud_detection/fraud_detection.csv")
     dataset = load_and_clean_data(dataset)
     visualize(dataset)
-    lr_acc, lr_prec, lr_rec, lr_f1, rf_acc, rf_prec, rf_rec, rf_f1 = preprocess_data(dataset)
-    results(lr_acc, lr_prec, lr_rec, lr_f1, rf_acc, rf_prec, rf_rec, rf_f1)
+    rf_acc, rf_prec, rf_rec, rf_f1 = preprocess_data(dataset) 
+    results(rf_acc, rf_prec, rf_rec, rf_f1)
     
 if __name__ == "__main__":
     main()
