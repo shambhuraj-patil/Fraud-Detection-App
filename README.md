@@ -27,9 +27,8 @@ Credit card fraud detection is a critical challenge for financial systems. This 
   - Applied **One-Hot Encoding** on categorical data
 - **Imbalanced Dataset**
   - Used **SMOTE** to synthetically balance fraud vs non-fraud cases
-- **Models Used**
-  - Logistic Regression (Baseline)
-  - Random Forest Classifier (Final Model)
+- **Model Used**
+  - Random Forest Classifier 
 - **Evaluation Metrics**
   - Accuracy: **88%**
   - Precision & Recall for fraud class
