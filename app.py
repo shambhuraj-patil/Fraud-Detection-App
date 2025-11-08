@@ -1,38 +1,25 @@
 import os
-import pickle
+import joblib
 import pandas as pd
 import seaborn as sns
 import streamlit as st
 import matplotlib.pyplot as plt
 
-# Load the trained ML model and the scaler object
-# Returns the model and scaler if they exist, otherwise returns None
-# Caching model and scaler for performance
-
+# Load only the trained ML model 
 @st.cache_resource
-def load_model_and_scaler():
+def load_model():
     model_path = "fraud_model.pkl"
-    scaler_path = "scaler.pkl"
-    if not os.path.exists(model_path) or not os.path.exists(scaler_path):
-        return None, None
-    with open(model_path, "rb") as f:
-        model = pickle.load(f)
-    with open(scaler_path, "rb") as f:
-        scaler = pickle.load(f)
-    return model, scaler
+    if not os.path.exists(model_path):
+        return None
+    model = joblib.load(model_path)
+    return model
 
-# Preprocess the dataset: fill missing values, remove outliers, encode categorical columns
-# Caching preprocessing of uploaded dataset
-
+# Preprocess dataset
 @st.cache_data
 def preprocess_dataset(dataset):
-    # Fill missing values in 'Amount' column with the mean
     dataset["Amount"] = dataset["Amount"].fillna(dataset["Amount"].mean())
-
-    # Drop ID-related columns if they exist (not useful for prediction)
     dataset.drop(columns=["TransactionID", "CustomerID"], inplace=True, errors='ignore')
 
-    # Remove outliers from numeric columns using the IQR method
     numeric_columns = ["Amount", "TransactionSpeed"] if "TransactionSpeed" in dataset.columns else ["Amount"]
     for col in numeric_columns:
         Q1 = dataset[col].quantile(0.25)
@@ -42,15 +29,12 @@ def preprocess_dataset(dataset):
         upper_bound = Q3 + 1.5 * IQR
         dataset = dataset[(dataset[col] >= lower_bound) & (dataset[col] <= upper_bound)]
 
-    # Convert categorical variables into dummy/one-hot encoded columns
     categorical_columns = ["TransactionType", "Location", "DeviceType", "TimeOfDay"]
     existing_cols = [col for col in categorical_columns if col in dataset.columns]
     dataset = pd.get_dummies(dataset, columns=existing_cols, drop_first=True)
-
     return dataset
 
-# Main Streamlit web application
-
+# Streamlit Web App
 def streamlit_app():
     st.set_page_config(page_title="Credit Card Fraud Detection", layout="wide")
     st.sidebar.title("🔍 Navigation")
@@ -63,31 +47,28 @@ def streamlit_app():
             st.image("fraud_banner.jpg", use_container_width=True)
 
         st.title("🛡️ Credit Card Fraud Detection System")
-        st.markdown("Predict the likelihood of fraud in transaction data using a trained machine learning model.")
+        st.markdown("Predict the likelihood of fraud in transaction data using a trained Random Forest model.")
 
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown("### ✅ What You Can Do:")
+            st.markdown("### ✅ Features:")
             st.markdown("""
                 🔹 Upload your transaction CSV file  
-                🔹 Preprocess and clean the data  
-                🔹 Visualize fraud patterns  
-                🔹 Predict fraud using ML  
-                🔹 Download results with probabilities  
+                🔹 Clean and preprocess the data  
+                🔹 Visualize fraud trends  
+                🔹 Predict potential frauds  
             """)
-
         with col2:
-            st.markdown("### 🧭 How to Use:")
+            st.markdown("### ⚙️ Tech Stack:")
             st.markdown("""
-                🔹 Upload a CSV file  
-                🔹 Go to 'Upload & Preprocess Data'  
-                🔹 Explore 'Visualization'  
-                🔹 Use 'Model Prediction'  
-                🔹 Download your fraud results  
+                🔹 Python  
+                🔹 Streamlit  
+                🔹 Scikit-learn  
+                🔹 Pandas, Seaborn  
             """)
 
         st.markdown("---")
-        st.markdown("Made with :heart: using Python, Streamlit, Scikit-learn  \nBy **Shambhuraj Patil**")
+        st.caption("Developed by **Shambhuraj Patil**")
 
     # ----------------------- UPLOAD & PREPROCESS ------------------------ #
     elif page == "📥 Upload & Preprocess":
@@ -108,67 +89,56 @@ def streamlit_app():
         except FileNotFoundError:
             st.warning("Sample CSV not found. Please check file path or re-upload.")
 
-        upload_file = st.file_uploader("📤 Upload a CSV file", type="csv")
+        st.info("Upload a dataset to clean, remove outliers, and encode categorical variables.")
+
+        upload_file = st.file_uploader("📤 Upload CSV", type="csv")
 
         if upload_file:
             dataset = pd.read_csv(upload_file)
-            st.session_state["raw_data"] = dataset.copy()  # Save raw data for visualization
-
-            # Validate column presence
-            required_columns = ["TransactionID", "CustomerID", "Amount", "TransactionType",
-                                "Location", "DeviceType", "TimeOfDay", "Fraud"]
-
-            missing_cols = [col for col in required_columns if col not in dataset.columns]
-            if missing_cols:
-                st.error(f"❌ Your dataset is missing required columns: {missing_cols}")
-                st.markdown("📌 Please ensure your file has all required columns. You can download a sample format above.")
-                st.stop()
+            st.session_state["raw_data"] = dataset.copy()
 
             st.success("✅ File Uploaded Successfully")
             st.subheader("📄 Raw Data Preview")
-            st.dataframe(dataset.head(10))
+            st.dataframe(dataset.head())
 
-            # Apply preprocessing steps with spinner
-            with st.spinner("⏳ Processing your data..."):
+            with st.spinner("⏳ Preprocessing data..."):
                 dataset = preprocess_dataset(dataset)
                 st.session_state["preprocessed_data"] = dataset
 
             st.subheader("✅ Preprocessed Data")
-            st.dataframe(dataset.head(10))
+            st.dataframe(dataset.head())
 
     # ---------------------------- VISUALIZATION -------------------------- #
     elif page == "📊 Visualization":
         st.title("📊 Fraud Data Visualization")
 
-        if "preprocessed_data" not in st.session_state:
+        if "raw_data" not in st.session_state:
             st.warning("⚠️ Please upload and preprocess your data first.")
             st.stop()
 
-        dataset = st.session_state["raw_data"]  # Use raw data to retain original categorical columns
+        dataset = st.session_state["raw_data"]
 
-        tab1, tab2, tab3, = st.tabs(["Fraud vs Non-Fraud", "Fraud by Transaction Type", "Amount"])
+        tab1, tab2, tab3 = st.tabs(["Fraud vs Non-Fraud", "Fraud by Transaction Type", "Amount Distribution"])
 
         with tab1:
-            st.subheader("📉 Fraud vs Non-Fraud Distribution")
+            st.subheader("Fraud vs Non-Fraud Distribution")
             fig1, ax1 = plt.subplots()
-            sns.countplot(x="Fraud", hue="Fraud", data=dataset, palette=["green", "red"], ax=ax1)
+            sns.countplot(x="Fraud", data=dataset, palette=["green", "red"], ax=ax1)
             st.pyplot(fig1)
 
         with tab2:
             if "TransactionType" in dataset.columns:
-                st.subheader("💳 Fraud Distribution by Transaction Type")
+                st.subheader("Fraud by Transaction Type")
                 fig2, ax2 = plt.subplots()
                 sns.countplot(x="TransactionType", hue="Fraud", data=dataset, palette=["green", "red"], ax=ax2)
                 plt.xticks(rotation=45)
                 st.pyplot(fig2)
-            else:
-                st.info("'TransactionType' column not found in your dataset.")
 
         with tab3:
             if "Amount" in dataset.columns:
-                st.subheader("💰 Amount Distribution")
+                st.subheader("Amount Distribution")
                 fig3, ax3 = plt.subplots()
-                sns.histplot(data=dataset, x="Amount", hue="Fraud", bins=40, kde=True, ax=ax3)
+                sns.histplot(data=dataset, x="Amount", hue="Fraud", bins=30, kde=True, ax=ax3)
                 st.pyplot(fig3)
 
     # -------------------------- MODEL PREDICTION -------------------------- #
@@ -181,49 +151,41 @@ def streamlit_app():
 
         dataset = st.session_state["preprocessed_data"]
 
-        st.markdown("### 🧾 Input Format Notice")
-        st.info(
-            """⚠️ **Important:**  
-            - Your preprocessed dataset must match the model's trained feature structure.  
-            - Unknown categories or missing dummy columns will be automatically filled with zeros.  
-            - Make sure preprocessing steps like encoding and outlier removal were applied."""
-        )
+        st.info("""
+            ⚠️ **Important:**  
+            - Dataset must match the model's trained features.  
+            - Missing dummy columns will be filled with zeros automatically.
+        """)
 
-        model, scaler = load_model_and_scaler()
-        if model is None or scaler is None:
-            st.error("🚫 Model or Scaler files not found. Make sure 'fraud_model.pkl' and 'scaler.pkl' are in the working directory.")
+        model = load_model()
+        if model is None:
+            st.error("🚫 Model file not found. Please ensure 'fraud_model.pkl' is in the app directory.")
             st.stop()
 
-        # Align input dataset with model features
+        # Align dataset columns with model features
         model_features = model.feature_names_in_
         for col in model_features:
             if col not in dataset.columns:
-                dataset[col] = 0  # Add missing columns as 0
-        dataset = dataset[model_features]  # Reorder columns
+                dataset[col] = 0
+        dataset = dataset[model_features]
 
-        # Apply scaling and prediction
-        scaled_data = scaler.transform(dataset)
-        predictions = model.predict(scaled_data)
-        probabilities = model.predict_proba(scaled_data)[:, 1] * 100
+        # Predict
+        predictions = model.predict(dataset)
+        probabilities = model.predict_proba(dataset)[:, 1] * 100
 
-        # Attach results to the dataset
+        # Combine results
         result_dataset = dataset.copy()
         result_dataset["Fraud Prediction"] = predictions.astype(int)
         result_dataset["Fraud Probability (%)"] = probabilities.round(2)
 
         st.subheader("🔍 Prediction Results")
+        st.dataframe(result_dataset.head(20))
 
-        # Add checkbox to control how many rows to show
-        if st.checkbox("Show all prediction results", value=False):
-            st.dataframe(result_dataset[["Fraud Prediction", "Fraud Probability (%)"]])
-        else:
-            st.dataframe(result_dataset[["Fraud Prediction", "Fraud Probability (%)"]].head(20))
-        
-        st.markdown("---")
-        st.download_button("Download Predictions", result_dataset.to_csv(index=False), file_name="fraud_predictions.csv", mime="text/csv")
-        st.success(f"✅ Total transactions analyzed: {len(result_dataset)}")
-        st.info(f"🚨 Fraudulent transactions detected: {(result_dataset['Fraud Prediction'] == 1).sum()}")
+        st.download_button("⬇️ Download Predictions", result_dataset.to_csv(index=False), file_name="fraud_predictions.csv", mime="text/csv")
 
-# Run the app
+        st.success(f"✅ Total Transactions Analyzed: {len(result_dataset)}")
+        st.info(f"🚨 Fraudulent Transactions Detected: {(result_dataset['Fraud Prediction'] == 1).sum()}")
+
+# Run the App
 if __name__ == "__main__":
     streamlit_app()
